@@ -127,7 +127,7 @@ Session 10
 
 June 1: Early!
 
-Student Presentations
+Student Presentations of Class Projects
 
 
 Other Topics:
@@ -137,8 +137,6 @@ These are topics that we don't have time for in class, but
 we have notes for all these an an assortment of others here:
 
 https://uwpce-pythoncert.github.io/Py300/
-
-
 
 License
 -------

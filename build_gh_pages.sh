@@ -34,5 +34,9 @@ pushd $GHPAGESDIR
 git add . # in case there are new files added
 git commit -a -m "updating presentation materials"
 git pull -s ours --no-edit
+<<<<<<< HEAD
 git push --set-upstream origin gh-pages
+=======
+git push
+>>>>>>> 0223446a3fab9a98fcaf16a1de7c1ac1ca1e93db
 
