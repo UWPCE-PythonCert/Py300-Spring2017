@@ -1,0 +1,111 @@
+Possible topics:
+
+Session 1:
+
+Logging - Chris
+
+Debugging - Maria
+  - Strategies
+  - call stack
+  - pdb/ipdb
+
+Session 2:
+
+(project outline due)
+
+Unit testing
+  - unittest
+  - testing strategies
+  - fixtures
+  - mocking
+  - doctests
+  - coverage
+
+Code style:
+  - docstrings
+  - PEP-8
+  - linters: pychecker, pylint, pyflakes
+
+
+Session 3:
+
+Packaging and package building - Chris
+
+Advanced OO
+  - multiple inheritance / mixins
+  - super()
+
+Code Reviewing - Maria
+
+Session 4
+
+(code reviews begin)
+
+Advanced OO (cont)
+  - __new__()
+  - type(), metaclasses
+
+Unicode
+
+Session 5
+
+Concurrency:  -- Maria
+  - multi threading
+  - multi processing
+
+Session 6
+
+Asynchronous programming: async / await --  Chris
+
+Session 7
+
+Session 8
+
+Session 9
+
+Session 10
+
+Project Presentations
+
+
+Optional Topics:
+----------------
+
+The conda package system
+
+Persistance and Serialization
+
+SQL Databases (DB-API w/ sqlite, postgres, mysql)
+
+Non-relational DBs (ZODB, MongoDB, BSDdb)
+
+Static Typing
+
+The SciPy stack
+  - numpy
+  - scipy
+  - ipython notebook (Jupyter)
+  - matplotlib
+  - pandas
+
+
+Writing py2/py3 compatible code
+
+Profiling/ Performance
+
+Datetime, time, pytz
+
+C extensions( C API, ctypes, cython )
+
+Reference Counting / Weak references
+
+GUI programming / wxPython
+
+Regular Expressions
+
+C Extensions: Cython, ctypes
+
+Functional Programming
+
+
+
