@@ -32,13 +32,13 @@ See specific class pages for details.
 
 
 Technology Requirements
-------------------------
+-----------------------
 
 Students will need a laptop computer with python 3.6.*, a development environment, and the ability to install additional software.
 
 
 Assessment Criteria & Course Expectations
-------------------------------------------------
+-----------------------------------------
 
 Students are required to attend 8 out 10 classes and complete a significant software project in the Python language, either individually or as part of a small group. In addition, each student will be required to present some of their work in progress for an in-class code review in the middle of the quarter.
 
