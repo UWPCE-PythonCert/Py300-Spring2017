@@ -29,13 +29,13 @@ format = '%(asctime)s %(levelname)s - %(module)8s - line:%(lineno)d - %(message)
 # basicConfig configures the "root logger" -- usually the one you want.
 # this sets it up to write to a file
 logging.basicConfig(filename='example.log',
-                    filemode='a',  # use 'a' if you want to preserve the old log file
+                    filemode='w',  # use 'a' if you want to preserve the old log file
                     format=format,
                     level=log_level)
 
 # and this will make it write to stdout as well
 # you would turn this off in production...
-if True:  # turn this off with False
+if False:  # turn this off with False
     std_handler = logging.StreamHandler(sys.stdout)
     # give this a different formatter:
     formatter = logging.Formatter('%(levelname)9s - %(module)s - %(message)s')

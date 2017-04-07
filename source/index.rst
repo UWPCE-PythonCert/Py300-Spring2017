@@ -48,7 +48,7 @@ April 11
 Session 3
 =========
 
-April 19
+April 18
 
 .. rst-class:: left
 

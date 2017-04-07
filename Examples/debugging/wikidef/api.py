@@ -13,14 +13,14 @@ class Wikipedia(object):
     @classmethod
     def article(cls, title):
         """Return contents of article
-    
+
         arguments:
-    
+
         title -- title of article
         """
-        data = {'action': 'parse', 'format': 'json', 'prop':'text', 'page': title}
+        data = {'action': 'parse', 'format': 'json', 'prop': 'text', 'page': title}
         response = requests.get(cls.api_endpoint, params=data)
-        json_response = response.json
+        json_response = response.json()
 
         try:
             contents = json_response['parse']['text']['*']
