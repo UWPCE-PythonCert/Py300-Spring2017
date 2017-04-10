@@ -1,7 +1,8 @@
 import unittest
 
-from api import Wikipedia, ParseError
+from api import MissingArticleError
 from definitions import Definitions
+
 
 class WikiDefTest(unittest.TestCase):
 
@@ -12,10 +13,9 @@ class WikiDefTest(unittest.TestCase):
         pass
 
     def test_article_success(self):
-        article = Definitions.article("Robot")        
+        article = Definitions.article("Robot")
         self.assertIn("mechanical", article)
 
     def test_missing_article_failure(self):
         missing_article_title = "!!!!!-NonExistentArticle"
-        self.assertRaises(ParseError, Definitions.article, missing_article_title)
-
+        self.assertRaises(MissingArticleError, Definitions.article, missing_article_title)

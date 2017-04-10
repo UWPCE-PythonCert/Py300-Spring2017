@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-some code for accessing the Wikipedia API
+Some code for accessing the Wikipedia API
 """
 
 # Really handy third-party module
@@ -12,6 +12,8 @@ import requests
 class ParseError(Exception):
     pass
 
+class MissingArticleError(Exception):
+    pass
 
 class Wikipedia(object):
     """
@@ -38,7 +40,8 @@ class Wikipedia(object):
         json_response = response.json()
 
         if "error" in json_response:
-            return "{} is not in wikipedia".format(title)
+            print (json_response)
+            raise MissingArticleError(str(json_response["error"]["info"]))
         else:
             try:
                 contents = json_response['parse']['text']['*']
