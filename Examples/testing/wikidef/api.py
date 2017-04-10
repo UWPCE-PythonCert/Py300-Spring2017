@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+
+"""
+some code for accessing the Wikipedia API
+"""
+
+# Really handy third-party module
+# ``pip install requests`` if you don't already have it
+import requests
+
+
+class ParseError(Exception):
+    pass
+
+
+class Wikipedia(object):
+    """
+    Wikipedia API interface
+
+    https://www.mediawiki.org/wiki/API:Main_page
+    """
+
+    # base url for the english edition of wikipedia
+    api_endpoint = "http://en.wikipedia.org/w/api.php?"
+
+    @classmethod
+    def get_article(cls, title):
+        """
+        Return contents of article
+
+        :param title: title of article
+        """
+        req_params = {'action': 'parse',
+                      'format': 'json',
+                      'prop': 'text',
+                      'page': title}
+        response = requests.get(cls.api_endpoint, params=req_params)
+        json_response = response.json()
+
+        if "error" in json_response:
+            return "{} is not in wikipedia".format(title)
+        else:
+            try:
+                contents = json_response['parse']['text']['*']
+                return contents
+            except KeyError:
+                raise ParseError(json_response)
