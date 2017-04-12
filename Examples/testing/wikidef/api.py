@@ -44,7 +44,8 @@ class Wikipedia(object):
             raise MissingArticleError(str(json_response["error"]["info"]))
         else:
             try:
-                contents = json_response['parse']['text']['*']
+                # limit the output, cause sometimes it is obnoxious
+                contents = json_response['parse']['text']['*'][:1000]
                 return contents
             except KeyError:
                 raise ParseError(json_response)
