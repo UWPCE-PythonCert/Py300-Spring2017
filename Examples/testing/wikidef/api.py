@@ -12,8 +12,10 @@ import requests
 class ParseError(Exception):
     pass
 
+
 class MissingArticleError(Exception):
     pass
+
 
 class Wikipedia(object):
     """
