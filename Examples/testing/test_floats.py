@@ -35,6 +35,9 @@ class TestAlmostEqual(unittest.TestCase):
         # these are very close differnt, but the rounding is only done for less than zero!
         self.assertTrue(math.isclose(3 * .15 * 1e30, .45 * 1e30))
 
+def test_floats():
+    assert math.isclose(3 * .15 * 1e30, .45 * 1e30, rel_tol=1e-16)
+
 
 if __name__ == '__main__':
     unittest.main()

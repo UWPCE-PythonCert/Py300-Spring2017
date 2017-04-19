@@ -32,6 +32,7 @@ param_names = "arg1, arg2, result"
 params = [(2, 2, 4),
           (2, -1, -2),
           (-2, -2, 4),
+          (3, 0, 0),
           ]
 @pytest.mark.parametrize(param_names, params)
 def test_multiply(arg1, arg2, result):
