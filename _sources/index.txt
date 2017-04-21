@@ -54,16 +54,18 @@ April 18
 
   - :ref:`code_review` -- Maria
 
+Code Reviews begin
+
 Session 4
 =========
 
-Code Reviews begin
-
 .. rst-class:: left
 
- - Decorators, iterables, context managers
+ - :ref:`iterables`
 
- - ABCs and standard class protocols
+ - :ref:`decorators`
+
+ - :ref:`abc`
 
 Session 5
 =========
