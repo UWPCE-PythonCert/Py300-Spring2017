@@ -1,5 +1,5 @@
+:orphan:
 .. _syllabus:
-
 ***************************
 System Development Syllabus
 ***************************
