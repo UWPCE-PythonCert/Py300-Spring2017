@@ -5,7 +5,6 @@ def counter():
         i = i + 1
         print('counter: yield', i)
         yield i
-    return None
 
 
 # if __name__ == '__main__':
@@ -14,6 +13,7 @@ def counter():
 #     print "call generator function"
 
 #     c = counter()
+#     print " note that nothing printed"
 #     print "the generator:"
 #     print repr(c)
 
