@@ -63,9 +63,6 @@ Session 4
 
  - :ref:`iterables`
 
- - :ref:`decorators`
-
- - :ref:`abc`
 
 Session 5
 =========
@@ -74,9 +71,9 @@ May 2
 
 .. rst-class:: left
 
-  - :ref:`advanced_oo` -- Chris
+ - :ref:`decorators`
 
-  - :ref:`metaclasses`
+ - :ref:`abc`
 
 
 Session 6
@@ -86,9 +83,9 @@ May 9
 
 .. rst-class:: left
 
-  - :ref:`threading`
+  - :ref:`advanced_oo` -- Chris
 
-  - :ref:`profiling`
+  - :ref:`metaclasses`
 
 Session 7
 =========
@@ -122,7 +119,11 @@ May 30
 
 .. rst-class:: left
 
+  - :ref:`threading`
+
   - :ref:`async`
+
+  - :ref:`profiling`
 
 
 Session 10
