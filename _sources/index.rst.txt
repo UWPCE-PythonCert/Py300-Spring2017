@@ -38,40 +38,30 @@ April 11
 
 .. rst-class:: left
 
+  - :ref:`pep8`
+
   - :ref:`testing`
 
- Code style:
-   - docstrings
-   - PEP-8
-   - linters: pychecker, pylint, pyflakes
 
 Session 3
 =========
 
-April 19
+April 18
 
 .. rst-class:: left
 
   - :ref:`packaging` -- Chris
 
-  - :ref:`advanced_oo` -- Chris
-
   - :ref:`code_review` -- Maria
+
+Code Reviews begin
 
 Session 4
 =========
 
-April 25 (Maria on Vacation)
-
-Code Reviews begin
-
 .. rst-class:: left
 
-  - :ref:`metaclasses`
-
-  - :ref:`unicode`
-
-
+ - :ref:`iterables`
 
 
 Session 5
@@ -81,7 +71,10 @@ May 2
 
 .. rst-class:: left
 
-  - :ref:`threading`
+ - :ref:`decorators`
+
+ - :ref:`abc`
+
 
 Session 6
 =========
@@ -90,7 +83,9 @@ May 9
 
 .. rst-class:: left
 
-  - :ref:`async`
+  - :ref:`advanced_oo` -- Chris
+
+  - :ref:`metaclasses`
 
 Session 7
 =========
@@ -101,7 +96,9 @@ May 16
 
 .. rst-class:: left
 
-  - :ref:`sql` -- Rick
+  - :ref:`sql`
+    -- Rick
+
 
 Session 8
 =========
@@ -112,6 +109,10 @@ May 23
 
 .. rst-class:: left
 
+  - :ref:`serialization`
+
+  - :ref:`nosql`
+
 
 Session 9
 =========
@@ -120,25 +121,32 @@ May 30
 
 .. rst-class:: left
 
+  - :ref:`threading`
 
+  - :ref:`async`
+
+  - :ref:`profiling`
 
 
 Session 10
 ==========
 
-June 1: Early!
+June 6
 
-Student Presentations of Class Projects
+(Chris out)
+
+.. rst-class:: left
+
+  Student Presentations of Class Projects
 
 Unscheduled:
 =============
-- :ref:`serialization`
+
 - :ref:`documentation`
-- :ref:`nosql`
 - :ref:`scipy`
 - :ref:`datetime`
-- :ref:`profiling`
 - :ref:`wxpython`
+- :ref:`unicode`
 
 
 Other Topics:
