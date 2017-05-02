@@ -3,7 +3,7 @@
 """
 This is about as simple a setup.py as you can have
 
-It installs the capitalize module and script
+But its enough to support the mailroom app
 
 """
 
@@ -15,7 +15,7 @@ def get_version():
     """
     Reads the version string from the package __init__ and returns it
     """
-    with open(os.path.join("capitalize", "__init__.py")) as init_file:
+    with open(os.path.join("mailroom", "__init__.py")) as init_file:
         for line in init_file:
             parts = line.strip().partition("=")
             if parts[0].strip() == "__version__":
@@ -24,14 +24,14 @@ def get_version():
 
 
 setup(
-    name='Capitalize',
+    name='mailroom',
     version=get_version(),
     author='Chris Barker',
     author_email='PythonCHB@gmail.com',
-    packages=['capitalize',
-              'capitalize/test'],
-    scripts=['bin/cap_script'],
+    packages=['mailroom',
+              'mailroom/test'],
+    scripts=['bin/mailroom'],
     license='LICENSE.txt',
-    description='Not very useful capitalizing module and script',
+    description='Simple app for managing donations for a non-profit',
     long_description=open('README.txt').read(),
 )

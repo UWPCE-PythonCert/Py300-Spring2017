@@ -9,6 +9,11 @@ import math
 # handy utility to make pretty printing easier
 from textwrap import dedent
 
+from mailroom import model
+
+# create a DB with the sample data
+db = model.DonorDB(model.get_sample_db())
+
 def main_menu_selection():
     """
     Print out the main application menu and then read the user input.
@@ -34,7 +39,7 @@ def send_thank_you():
     while True:
         name = input("Enter a donor's name (or list to see all donors or 'menu' to exit)> ").strip()
         if name == "list":
-            print(list_donors())
+            print(db.list_donors())
         elif name == "menu":
             return
         else:
@@ -63,30 +68,29 @@ def send_thank_you():
 
     # If this is a new user, ensure that the database has the necessary
     # data structure.
-    donor = find_donor(name)
+    donor = db.find_donor(name)
     if donor is None:
-        donor = add_donor(name)
+        donor = db.add_donor(name)
 
     # Record the donation
+    # FIXME: this knows a bit too much abou the internals.
     donor[1].append(amount)
-    print(gen_letter(donor))
+    print(db.gen_letter(donor))
 
 
 def print_donor_report():
-    print(generate_donor_report())
+    print(db.generate_donor_report())
 
 
 def quit():
     sys.exit(0)
 
 def main():
-    donor_db = get_donor_db()
-
     running = True
 
     selection_dict = {"1": send_thank_you,
                       "2": print_donor_report,
-                      "3": save_letters_to_disk,
+                      "3": db.save_letters_to_disk,
                       "4": quit}
 
     while True:
