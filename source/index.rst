@@ -96,7 +96,9 @@ May 16
 
 .. rst-class:: left
 
-  - :ref:`sql` -- Rick
+  - :ref:`sql`
+    -- Rick
+
 
 Session 8
 =========
