@@ -12,7 +12,7 @@ from textwrap import dedent
 from mailroom import model
 
 # create a DB with the sample data
-db = model.DonorDB(model.get_sample_db())
+db = model.DonorDB(model.get_sample_data())
 
 def main_menu_selection():
     """
@@ -73,8 +73,8 @@ def send_thank_you():
         donor = db.add_donor(name)
 
     # Record the donation
-    # FIXME: this knows a bit too much abou the internals.
-    donor[1].append(amount)
+    # FIXME: this knows a bit too much about the internals.
+    donor.add_donation(amount)
     print(db.gen_letter(donor))
 
 

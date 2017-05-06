@@ -5,16 +5,28 @@ unit tests for the models in the mailroom program
 """
 
 import os
-
+import pytest
 from mailroom import model
 
-# so that it's there for the tests
-# FIXME: this should be a fixture!
-db = model.DonorDB(model.get_sample_db())
+@pytest.fixture
+def sample_db():
+    """
+    creates a clean sample database for the tests to use
+    """
+    return model.DonorDB(model.get_sample_data())
+
+def test_add_donation(sample_db):
+    # fixme: there should be a better way to get an arbitrary donor
+    donor = sample_db.donor_data.popitem()[1]
+
+    donor.add_donation(3000)
+
+    assert donor.last_donation == 3000
 
 
-def test_list_donors():
-    listing = db.list_donors()
+
+def test_list_donors(sample_db):
+    listing = sample_db.list_donors()
 
     # hard to test this throughly -- better not to hard code the entire
     # thing. But check for a few aspects -- this will catch the likely
@@ -25,57 +37,58 @@ def test_list_donors():
     assert len(listing.split('\n')) == 5
 
 
-def test_find_donor():
+# fixme: add more odd serch test cases -- extra whitespace, etc.
+def test_find_donor(sample_db):
     """ checks a donor that is there, but with odd case and spaces"""
-    donor = db.find_donor("jefF beZos ")
+    donor = sample_db.find_donor("jefF beZos ")
 
-    assert donor[0] == "Jeff Bezos"
+    assert donor.name == "Jeff Bezos"
 
 
-def test_find_donor_not():
+def test_find_donor_not(sample_db):
     "test one that's not there"
-    donor = db.find_donor("Jeff Bzos")
+    donor = sample_db.find_donor("Jeff Bzos")
 
     assert donor is None
 
 
-def test_gen_letter():
+def test_gen_letter(sample_db):
     """ test the donor letter """
 
     # create a sample donor
-    donor = ("Fred Flintstone", [432.45, 65.45, 230.0])
-    letter = db.gen_letter(donor)
+    donor = model.Donor("Fred Flintstone", [432.45, 65.45, 230.0])
+    letter = sample_db.gen_letter(donor)
     # what to test? tricky!
     assert letter.startswith("Dear Fred Flintstone")
     assert letter.endswith("-The Team\n")
     assert "donation of $230.00" in letter
 
 
-def test_add_donor():
+def test_add_donor(sample_db):
     name = "Fred Flintstone  "
 
-    donor = db.add_donor(name)
+    donor = sample_db.add_donor(name)
     donor[1].append(300)
     assert donor[0] == "Fred Flintstone"
     assert donor[1] == [300]
-    assert db.find_donor(name) == donor
+    assert sample_db.find_donor(name) == donor
 
 
-def test_generate_donor_report():
+def test_generate_donor_report(sample_db):
 
-    report = db.generate_donor_report()
+    report = sample_db.generate_donor_report()
 
     print(report)  # printing so you can see it if it fails
     # this is pretty tough to test
     # these are not great, because they will fail if unimportant parts of the
     # report are changed.
-    # but at least you know that codes working now.
+    # but at least you know that code's working now.
     assert report.startswith("Donor Name                | Total Given | Num Gifts | Average Gift")
 
     assert "Jeff Bezos                  $    877.33           1   $     877.33" in report
 
 
-def test_save_letters_to_disk():
+def test_save_letters_to_disk(sample_db):
     """
     This only tests that the files get created, but that's a start
 
@@ -84,11 +97,11 @@ def test_save_letters_to_disk():
     """
 
     # FIXME: this should create a temp dir to save to.
-    db.save_letters_to_disk()
+    sample_db.save_letters_to_disk()
 
     assert os.path.isfile('Jeff_Bezos.txt')
     assert os.path.isfile('William_Gates_III.txt')
-    # check that it'snot empty:
+    # check that it's not empty:
     with open('William_Gates_III.txt') as f:
         size = len(f.read())
     assert size > 0
