@@ -7,24 +7,13 @@ This is where the programlogic is.
 This version has been made mroe Object oriented.
 """
 
-import math
-
 # handy utility to make pretty printing easier
 from textwrap import dedent
 
 
-# In memory representation of the donor database
-# using a tuple for each donor
-# -- kind of like a record in a database table
-# using a dict with a lower case version of the donor's name as the key
-# This makes it easier to have a 'normalized' key.
-#  you could get a bit fancier by having each "record" be a dict, with
-#   "name" and "donations" as keys.
-
 def get_sample_data():
     """
     returns a list of donor objects to use as sample data
-
     """
     return [Donor("William Gates III", [653772.32, 12.17]),
             Donor("Jeff Bezos", [877.33]),
@@ -47,21 +36,21 @@ class Donor:
         :param donations=None: iterable of past donations
         """
 
-        self.norm_name = self._normalize_name(name)
-        self.name = name
+        self.norm_name = self.normalize_name(name)
+        self.name = name.strip()
         if donations is None:
             self.donations = []
         else:
             self.donations = list(donations)
 
     @staticmethod
-    def _normalize_name(name):
+    def normalize_name(name):
         """
         return a normalized version of a name to use as a comparison key
 
         simple enough to not be in a method now, but maybe you'd want to make it fancier later.
         """
-        return name.lower()
+        return name.lower().strip()
 
     @property
     def last_donation(self):
@@ -97,6 +86,13 @@ class DonorDB:
         else:
             self.donor_data = {d.norm_name: d for d in donors}
 
+    @property
+    def donors(self):
+        """
+        an iterable of all the donors
+        """
+        return self.donor_data.values()
+
     def list_donors(self):
         """
         creates a list of the donors as a string, so they can be printed
@@ -105,7 +101,7 @@ class DonorDB:
         test
         """
         listing = ["Donor list:"]
-        for donor in self.donor_data.values():
+        for donor in self.donors:
             listing.append(donor.name)
         return "\n".join(listing)
 
@@ -117,8 +113,7 @@ class DonorDB:
 
         :returns: The donor data structure -- None if not in the self.donor_data
         """
-        key = name.strip().lower()
-        return self.donor_data.get(key)
+        return self.donor_data.get(Donor.normalize_name(name))
 
     def add_donor(self, name):
         """
@@ -128,9 +123,8 @@ class DonorDB:
 
         :returns: the new Donor data structure
         """
-        name = name.strip()
-        donor = (name, [])
-        self.donor_data[name.lower()] = donor
+        donor = Donor(name)
+        self.donor_data[donor.norm_name] = donor
         return donor
 
     def gen_letter(self, donor):
@@ -167,7 +161,6 @@ class DonorDB:
         """
         # First, reduce the raw data into a summary list view
         report_rows = []
-        # fixme - make the donor db directly iterable?
         for donor in self.donor_data.values():
             name = donor.name
             gifts = donor.donations

@@ -18,6 +18,7 @@ from mailroom import model
 # create a DB with the sample data
 db = model.DonorDB(model.get_sample_data())
 
+
 def main_menu_selection():
     """
     Print out the main application menu and then read the user input.
@@ -36,7 +37,7 @@ def main_menu_selection():
 
 def send_thank_you():
     """
-    Execute the logic to record a donation and generate a thank you message.
+    Record a donation and generate a thank you message.
     """
     # Read a valid donor to send a thank you from, handling special commands to
     # let the user navigate as defined.
@@ -78,7 +79,6 @@ def send_thank_you():
         donor = db.add_donor(name)
 
     # Record the donation
-    # FIXME: this knows a bit too much about the internals.
     donor.add_donation(amount)
     print(db.gen_letter(donor))
 
@@ -90,9 +90,8 @@ def print_donor_report():
 def quit():
     sys.exit(0)
 
-def main():
-    running = True
 
+def main():
     selection_dict = {"1": send_thank_you,
                       "2": print_donor_report,
                       "3": db.save_letters_to_disk,
@@ -108,4 +107,3 @@ def main():
 if __name__ == "__main__":
 
     main()
-

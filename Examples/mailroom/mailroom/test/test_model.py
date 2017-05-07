@@ -111,9 +111,9 @@ def test_add_donor(sample_db):
     name = "Fred Flintstone  "
 
     donor = sample_db.add_donor(name)
-    donor[1].append(300)
-    assert donor[0] == "Fred Flintstone"
-    assert donor[1] == [300]
+    donor.add_donation(300)
+    assert donor.name == "Fred Flintstone"
+    assert donor.last_donation == 300
     assert sample_db.find_donor(name) == donor
 
 
