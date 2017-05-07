@@ -62,6 +62,14 @@ class Donor:
         except IndexError:
             return None
 
+    @property
+    def total_donations(self):
+        return sum(self.donations)
+
+    @property
+    def average_donation(self):
+        return self.total_donations / len(self.donations)
+
     def add_donation(self, amount):
         """
         add a new donation
@@ -164,9 +172,9 @@ class DonorDB:
         for donor in self.donor_data.values():
             name = donor.name
             gifts = donor.donations
-            total_gifts = sum(gifts)
+            total_gifts = donor.total_donations
             num_gifts = len(gifts)
-            avg_gift = total_gifts / num_gifts
+            avg_gift = donor.average_donation
             report_rows.append((name, total_gifts, num_gifts, avg_gift))
 
         # sort the report data
