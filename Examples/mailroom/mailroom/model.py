@@ -7,7 +7,6 @@ This is where the programlogic is.
 This version has been made mroe Object oriented.
 """
 
-import sys
 import math
 
 # handy utility to make pretty printing easier
@@ -42,7 +41,7 @@ class Donor:
     def __init__(self, name, donations=None):
         """
         create a new Donor object
-        
+
         :param name: the full name of the donor
 
         :param donations=None: iterable of past donations
@@ -54,7 +53,6 @@ class Donor:
             self.donations = []
         else:
             self.donations = list(donations)
-
 
     @staticmethod
     def _normalize_name(name):
@@ -70,7 +68,10 @@ class Donor:
         """
         The most recent donation made
         """
-        return self.donations[-1]
+        try:
+            return self.donations[-1]
+        except IndexError:
+            return None
 
     def add_donation(self, amount):
         """
@@ -94,8 +95,7 @@ class DonorDB:
         if donors is None:
             self.donor_data = {}
         else:
-            self.donor_data = {d.norm_name:d for d in donors}
-
+            self.donor_data = {d.norm_name: d for d in donors}
 
     def list_donors(self):
         """
@@ -109,7 +109,6 @@ class DonorDB:
             listing.append(donor.name)
         return "\n".join(listing)
 
-
     def find_donor(self, name):
         """
         find a donor in the donor db
@@ -120,7 +119,6 @@ class DonorDB:
         """
         key = name.strip().lower()
         return self.donor_data.get(key)
-
 
     def add_donor(self, name):
         """
@@ -134,7 +132,6 @@ class DonorDB:
         donor = (name, [])
         self.donor_data[name.lower()] = donor
         return donor
-
 
     def gen_letter(self, donor):
         """
@@ -155,15 +152,12 @@ class DonorDB:
                              Sincerely,
                                 -The Team
               '''.format(donor.name, donor.last_donation)
-              )
-
-
+                      )
 
     @staticmethod
     def sort_key(item):
         # used to sort on name in self.donor_data
         return item[1]
-
 
     def generate_donor_report(self):
         """
@@ -173,7 +167,7 @@ class DonorDB:
         """
         # First, reduce the raw data into a summary list view
         report_rows = []
-        #fixme - make the donor db directly iterable?
+        # fixme - make the donor db directly iterable?
         for donor in self.donor_data.values():
             name = donor.name
             gifts = donor.donations
@@ -193,7 +187,6 @@ class DonorDB:
         for row in report_rows:
             report.append("{:25s}   ${:10.2f}   {:9d}   ${:11.2f}".format(*row))
         return "\n".join(report)
-
 
     def save_letters_to_disk(self):
         """
