@@ -143,9 +143,10 @@ class MetaJsonSavable(type):
     The metaclass for creating JsonSavable classes
 
     Deriving from type makes it a metaclass.
-    """
-    all_savables = {}
 
+    Note: the __init__ gets run at compile time, not run time.
+          (module import time)
+    """
     def __init__(cls, name, bases, attr_dict):
         # it gets the class object as the first param.
         # and then the same parameters as the type() factory function
@@ -273,35 +274,36 @@ class OtherSaveable(JsonSavable):
         self.bar = bar
 
 
-# create one:
-print("about to create a subclass")
-mc = MyClass(5, [3, 5, 7, 9])
+if __name__ == "__main__":
+    # create one:
+    print("about to create a subclass")
+    mc = MyClass(5, [3, 5, 7, 9])
 
-print(mc)
+    print(mc)
 
-jc = mc.to_json_compat()
+    jc = mc.to_json_compat()
 
-# re-create it from the dict:
-mc2 = MyClass.from_json_dict(jc)
+    # re-create it from the dict:
+    mc2 = MyClass.from_json_dict(jc)
 
-print(mc2 == "fred")
+    print(mc2 == "fred")
 
-assert mc2 == mc
+    assert mc2 == mc
 
-print(mc.to_json())
+    print(mc.to_json())
 
-# now try it nested...
-mc_nest = MyClass(34, [OtherSaveable("this", 2),
-                       OtherSaveable("that", 64),
-                       ])
+    # now try it nested...
+    mc_nest = MyClass(34, [OtherSaveable("this", 2),
+                           OtherSaveable("that", 64),
+                           ])
 
-mc_nest_comp = mc_nest.to_json_compat()
-print(mc_nest_comp)
+    mc_nest_comp = mc_nest.to_json_compat()
+    print(mc_nest_comp)
 
-# can we re-create it?
-mc_nest2 = MyClass.from_json_dict(mc_nest_comp)
+    # can we re-create it?
+    mc_nest2 = MyClass.from_json_dict(mc_nest_comp)
 
-print(mc_nest)
-print(mc_nest2)
+    print(mc_nest)
+    print(mc_nest2)
 
-assert mc_nest == mc_nest2
+    assert mc_nest == mc_nest2
