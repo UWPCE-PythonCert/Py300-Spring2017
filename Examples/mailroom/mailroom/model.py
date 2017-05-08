@@ -74,8 +74,10 @@ class Donor:
         """
         add a new donation
         """
-        # fixme: this would be a good palce to do some error checking!
-        self.donations.append(float(amount))
+        amount = float(amount)
+        if amount <= 0.0:
+            raise ValueError("Donation must be greater than zero")
+        self.donations.append(amount)
 
 
 class DonorDB:

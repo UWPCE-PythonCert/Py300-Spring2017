@@ -68,6 +68,17 @@ def test_add_donation(sample_db):
     assert donor.last_donation == 3000
 
 
+def test_add_donation_negative(sample_db):
+    # fixme: there should be a better way to get an arbitrary donor
+    donor = sample_db.donor_data.popitem()[1]
+
+    with pytest.raises(ValueError):
+        donor.add_donation(-100)
+
+    with pytest.raises(ValueError):
+        donor.add_donation(0.0)
+
+
 def test_list_donors(sample_db):
     listing = sample_db.list_donors()
 
