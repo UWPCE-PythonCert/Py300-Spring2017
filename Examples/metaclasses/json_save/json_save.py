@@ -13,8 +13,9 @@ that be saved and reloaded to/from JSON
 
 import json
 
-# global dict to hold all savables
+# global dict to hold all savables so they can be found when re-constructing
 ALL_SAVABLES = {}
+
 
 class Savable():
 
@@ -39,6 +40,14 @@ class Savable():
         return val
 
 
+class String(Savable):
+    default = ""
+
+
+class Bool(Savable):
+    default = False
+
+
 class Int(Savable):
     default = 0
 
@@ -61,10 +70,6 @@ class Float(Savable):
         return float(val)
 
 
-class String(Savable):
-    default = ""
-
-
 class Tuple(Savable):
     """
     this assumes that whatever is in the tuple is Savable as well
@@ -74,10 +79,10 @@ class Tuple(Savable):
     @staticmethod
     def to_python(val):
         """
-        Convert a array to a tuple -- json only has one array type,
+        Convert a list to a tuple -- json only has one array type,
         which matches to a list.
         """
-        return tuple(val)
+        return tuple(List.to_python(val))
 
 
 class List(Savable):
@@ -127,6 +132,10 @@ class Dict(Savable):
     this assumes that whatever in the dict is Savable as well
     """
     default = {}
+
+    @staticmethod
+    def to_json_compat(val):
+        raise NotImplementedError
 
 
 class MetaJsonSavable(type):
