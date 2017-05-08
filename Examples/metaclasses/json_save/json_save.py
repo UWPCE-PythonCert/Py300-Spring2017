@@ -5,19 +5,21 @@ json_save
 
 metaclass based system for saving objects in a JSON format
 
-This could be useful, but it's kept simple to shoe the use of metaclasses
+This could be useful, but it's kept simple to show the use of metaclasses
 
 The idea is that you subclass from JsonSavable, and then you get an object
 that be saved and reloaded to/from JSON
-
 """
 
 import json
 
+# global dict to hold all savables
+ALL_SAVABLES = {}
+
 class Savable():
 
     @staticmethod
-    def to_json(val):
+    def to_json_compat(val):
         """
         returns a json-compatible version of val
 
@@ -80,9 +82,23 @@ class Tuple(Savable):
 
 class List(Savable):
     """
-    this assumes that whatever in in the list is Savable as well
+    This assumes that whatever is in the list is Savable or a "usual"
+    type: numbers, strings.
     """
     default = []
+
+    @staticmethod
+    def to_json_compat(val):
+        print("in List.to_json_compat", val)
+        l = []
+        for item in val:
+            print("processing", item)
+            try:
+                l.append(item.to_json_compat())
+            except AttributeError:
+                print("it did not have a to_json_compat method")
+                l.append(item)
+        return l
 
     @staticmethod
     def to_python(val):
@@ -91,7 +107,19 @@ class List(Savable):
         which matches to a list, so this isn't really required --
         but it is her for completeness sake
         """
-        return tuple(val)
+        # try to reconstitute using the obj method
+        new_list = []
+        for item in val:
+            print("processing:", item)
+            try:
+                obj_type = item["__obj_type"]
+                print("it has an object_type", obj_type)
+                obj = ALL_SAVABLES[obj_type].from_json_dict(item)
+                new_list.append(obj)
+            except TypeError:
+                print("TypeError raised")
+                new_list.append(item)
+        return new_list
 
 
 class Dict(Savable):
@@ -103,10 +131,12 @@ class Dict(Savable):
 
 class MetaJsonSavable(type):
     """
-    The metaclass for creating JsonSavable object
+    The metaclass for creating JsonSavable classes
 
-    Deriving from type makes it a metaclass!
+    Deriving from type makes it a metaclass.
     """
+    all_savables = {}
+
     def __init__(cls, name, bases, attr_dict):
         # it gets the class object as the first param.
         # and then the same parameters as the type() factory function
@@ -116,20 +146,20 @@ class MetaJsonSavable(type):
         print(cls, name, bases)
         print("attributes of the wrapped class are:", attr_dict.keys())
         # here's where we work with the class attributes:
-        # cls._attrs_to_save = [] # keep a list of the attributes to save
+        # these will the attributes that get saved and reconstructed from json.
+        # each class object gets its own dict
+        cls._attrs_to_save = {}
         for key, attr in attr_dict.items():
             if isinstance(attr, Savable):
                 cls._attrs_to_save[key] = attr
+        # register this class so we can re-construct instances.
+        ALL_SAVABLES[attr_dict["__qualname__"]] = cls
 
 
 class JsonSavable(metaclass=MetaJsonSavable):
     """
-    mixing for JsonSavable objects
+    mixin for JsonSavable objects
     """
-
-    _attrs_to_save = {}  # these will the atrributes that get saved and
-                         # reconstructed from json.
-
     def __new__(cls, *args, **kwargs):
         """
         This adds instance attributes to assure they are all there, even if
@@ -145,15 +175,29 @@ class JsonSavable(metaclass=MetaJsonSavable):
     def __init__(self):
         print ("in JsonSavable __init__")
 
-    def to_json_dict(self):
+    def __eq__(self, other):
+        """
+        default equality method that checks if all of the saved attributes
+        are equal
+        """
+        for attr in self._attrs_to_save:
+            try:
+                if getattr(self, attr) != getattr(other, attr):
+                    return False
+            except AttributeError:
+                return False
+        return True
+
+    def to_json_compat(self):
         """
         converts this object to a json-compatible dict.
 
         returns the dict
         """
-        dic = {}
+        # add and __obj_type attribute, so it can be reconstructed
+        dic = {"__obj_type": self.__class__.__qualname__}
         for attr, typ in self._attrs_to_save.items():
-            dic[attr] = typ.to_json(getattr(self, attr))
+            dic[attr] = typ.to_json_compat(getattr(self, attr))
         return dic
 
     @classmethod
@@ -163,15 +207,16 @@ class JsonSavable(metaclass=MetaJsonSavable):
         the json compatible dict
 
         the object is created with __new__ before setting the attributes
-        Then __init__ is called, in case there is any additional initialization
-        that has to go on.
+
+        NOTE: __init__ is not called.
+        There should not be any extra initialization required in __init__
         """
         # create a new object
         obj = cls.__new__(cls)
         for attr, typ in cls._attrs_to_save.items():
             setattr(obj, attr, typ.to_python(dic[attr]))
         # make sure it gets initialized
-        obj.__init__()
+        # obj.__init__()
         return obj
 
     def to_json(self, fp=None, indent=4):
@@ -185,12 +230,12 @@ class JsonSavable(metaclass=MetaJsonSavable):
         :param indent=4: The indentation level desired in the JSON
         """
         if fp is None:
-            return json.dumps(self.to_json_dict(), indent=indent)
+            return json.dumps(self.to_json_compat(), indent=indent)
         else:
-            json.dump(self.to_json_dict(), fp, indent=indent)
+            json.dump(self.to_json_compat(), fp, indent=indent)
 
     def __str__(self):
-        msg = ["{} object, with attributes:".format(self.__class__)]
+        msg = ["{} object, with attributes:".format(self.__class__.__qualname__)]
         for attr in self._attrs_to_save.keys():
             msg.append("{}: {}".format(attr, getattr(self, attr)))
         return "\n".join(msg)
@@ -201,27 +246,53 @@ class MyClass(JsonSavable):
 
     x = Int()
     y = Float()
+    l = List()
 
-    def __init__(self, x=None):
-        print("in MyClass.__init__", x)
-        if x is not None:
-            self.x = x
+    def __init__(self, x, l):
+        self.x = x
+        self.l = l
         print("attrs_to_save", self._attrs_to_save)
+
+
+class OtherSaveable(JsonSavable):
+
+    foo = String()
+    bar = Int()
+
+    def __init__(self, foo, bar):
+        self.foo = foo
+        self.bar = bar
+
 
 # create one:
 print("about to create a subclass")
-mc = MyClass(5)
+mc = MyClass(5, [3, 5, 7, 9])
 
 print(mc)
 
-print(mc.to_json_dict())
+jc = mc.to_json_compat()
 
 # re-create it from the dict:
-print(MyClass.from_json_dict(mc.to_json_dict()))
+mc2 = MyClass.from_json_dict(jc)
 
-print (mc.to_json())
+print(mc2 == "fred")
 
+assert mc2 == mc
 
+print(mc.to_json())
 
+# now try it nested...
+mc_nest = MyClass(34, [OtherSaveable("this", 2),
+                       OtherSaveable("that", 64),
+                       ])
 
+mc_nest_comp = mc_nest.to_json_compat()
+print(mc_nest_comp)
 
+# can we re-create it?
+mc_nest2 = MyClass.from_json_dict(mc_nest_comp)
+
+print(mc_nest)
+print(mc_nest2)
+
+assert mc_nest == mc_nest2
