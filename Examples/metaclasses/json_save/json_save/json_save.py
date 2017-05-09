@@ -94,14 +94,11 @@ class List(Savable):
 
     @staticmethod
     def to_json_compat(val):
-        print("in List.to_json_compat", val)
         l = []
         for item in val:
-            print("processing", item)
             try:
                 l.append(item.to_json_compat())
             except AttributeError:
-                print("it did not have a to_json_compat method")
                 l.append(item)
         return l
 
@@ -115,14 +112,11 @@ class List(Savable):
         # try to reconstitute using the obj method
         new_list = []
         for item in val:
-            print("processing:", item)
             try:
                 obj_type = item["__obj_type"]
-                print("it has an object_type", obj_type)
                 obj = ALL_SAVABLES[obj_type].from_json_dict(item)
                 new_list.append(obj)
             except TypeError:
-                print("TypeError raised")
                 new_list.append(item)
         return new_list
 
@@ -152,9 +146,11 @@ class MetaJsonSavable(type):
         # and then the same parameters as the type() factory function
         # you want to call the regular type initilizer:
         super().__init__(name, bases, attr_dict)
-        print("in MetaJsonSavable __init__")
-        print(cls, name, bases)
-        print("attributes of the wrapped class are:", attr_dict.keys())
+
+        # print("in MetaJsonSavable __init__")
+        # print(cls, name, bases)
+        # print("attributes of the wrapped class are:", attr_dict.keys())
+
         # here's where we work with the class attributes:
         # these will the attributes that get saved and reconstructed from json.
         # each class object gets its own dict
@@ -183,7 +179,8 @@ class JsonSavable(metaclass=MetaJsonSavable):
         return obj
 
     def __init__(self):
-        print ("in JsonSavable __init__")
+        # print ("in JsonSavable __init__")
+        pass
 
     def __eq__(self, other):
         """
@@ -258,7 +255,6 @@ def from_json_dict(j_dict):
     """
     # determine the class it is.
     obj_type = j_dict["__obj_type"]
-    # print("it has an object_type", obj_type)
     obj = ALL_SAVABLES[obj_type].from_json_dict(j_dict)
     return obj
 
@@ -286,7 +282,6 @@ if __name__ == "__main__":
         def __init__(self, x, l):
             self.x = x
             self.l = l
-            print("attrs_to_save", self._attrs_to_save)
 
     class OtherSaveable(JsonSavable):
 
