@@ -108,9 +108,9 @@ class List(Savable):
     @staticmethod
     def to_python(val):
         """
-        Convert an array to a list -- json only has one array type,
-        which matches to a list, so this isn't really required --
-        but it is her for completeness sake
+        Convert an array to a list.
+
+        Complicated because list may contain non-json-compatible objects
         """
         # try to reconstitute using the obj method
         new_list = []
@@ -251,30 +251,52 @@ class JsonSavable(metaclass=MetaJsonSavable):
         return "\n".join(msg)
 
 
-# Example of using it.
-class MyClass(JsonSavable):
+def from_json_dict(j_dict):
+    """
+    factory function that creates an arbitrary JsonSavable
+    object from a json-compatible dict.
+    """
+    # determine the class it is.
+    obj_type = j_dict["__obj_type"]
+    # print("it has an object_type", obj_type)
+    obj = ALL_SAVABLES[obj_type].from_json_dict(j_dict)
+    return obj
 
-    x = Int()
-    y = Float()
-    l = List()
 
-    def __init__(self, x, l):
-        self.x = x
-        self.l = l
-        print("attrs_to_save", self._attrs_to_save)
-
-
-class OtherSaveable(JsonSavable):
-
-    foo = String()
-    bar = Int()
-
-    def __init__(self, foo, bar):
-        self.foo = foo
-        self.bar = bar
+def from_json(_json):
+    """
+    factory function that re-creates a JsonSavable object
+    from a json string or file
+    """
+    if isinstance(_json, str):
+        return from_json_dict(json.loads(_json))
+    else:  # assume a file-like object
+        return from_json_dict(json.load(_json))
 
 
 if __name__ == "__main__":
+
+    # Example of using it.
+    class MyClass(JsonSavable):
+
+        x = Int()
+        y = Float()
+        l = List()
+
+        def __init__(self, x, l):
+            self.x = x
+            self.l = l
+            print("attrs_to_save", self._attrs_to_save)
+
+    class OtherSaveable(JsonSavable):
+
+        foo = String()
+        bar = Int()
+
+        def __init__(self, foo, bar):
+            self.foo = foo
+            self.bar = bar
+
     # create one:
     print("about to create a subclass")
     mc = MyClass(5, [3, 5, 7, 9])
