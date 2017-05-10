@@ -32,6 +32,15 @@ class ClassWithList(js.JsonSavable):
         self.l = l
 
 
+class ClassWithDict(js.JsonSavable):
+    x = js.Int()
+    d = js.Dict()
+
+    def __init__(self, x, d):
+        self.x = x
+        self.d = d
+
+
 @pytest.fixture
 def nested_example():
     l = [SimpleClass(3, 4.5),
@@ -40,6 +49,16 @@ def nested_example():
          ]
 
     return ClassWithList(34, l)
+
+
+@pytest.fixture
+def nested_dict():
+    d = {'this': SimpleClass(3, 4.5),
+         'that': SimpleClass(100, 5.2),
+         'other': SimpleClass(34, 89.1),
+         }
+
+    return ClassWithDict(34, d)
 
 
 def test_simple_hasattr():
@@ -139,3 +158,30 @@ def test_from_json_file(nested_example):
     reconstructed = js.from_json(json_str)
 
     assert reconstructed == nested_example
+
+
+def test_dict():
+    """
+    a simple class with a dict attribute
+    """
+    cwd = ClassWithDict(45, {"this": 34, "that": 12})
+
+    # see if it can be reconstructed
+
+    jc = cwd.to_json_compat()
+
+    # re-create it from the dict:
+    cwd2 = ClassWithDict.from_json_dict(jc)
+
+    assert cwd == cwd2
+
+def test_from_json_dict(nested_dict):
+    """
+    can it be re-created from an actual json string?
+    """
+
+    json_str = nested_dict.to_json()
+
+    reconstructed = js.from_json(json_str)
+
+    assert reconstructed == nested_dict

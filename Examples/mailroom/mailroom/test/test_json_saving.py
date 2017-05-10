@@ -1,6 +1,10 @@
 # tests of saving the objects and datbase in json format.
 
+import pytest
+
 from mailroom import model
+
+pytestmark = pytest.mark.skipif(True, reason="don't have json_save yet")  # we'll run these again when the json_save stuff in is.
 
 
 def test_donor_round_trip():

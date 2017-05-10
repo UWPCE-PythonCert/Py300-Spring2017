@@ -129,7 +129,32 @@ class Dict(Savable):
 
     @staticmethod
     def to_json_compat(val):
-        raise NotImplementedError
+        d = {}
+        for key, item in val.items():
+            try:
+                d[key] = item.to_json_compat()
+            except AttributeError:
+                d[key] = item
+        return d
+
+    @staticmethod
+    def to_python(val):
+        """
+        Convert a json object to a list.
+
+        Complicated because object may contain non-json-compatible objects
+        """
+
+        # try to reconstitute using the obj method
+        new_dict = {}
+        for key, item in val.items():
+            try:
+                obj_type = item["__obj_type"]
+                obj = ALL_SAVABLES[obj_type].from_json_dict(item)
+                new_dict[key] = obj
+            except TypeError:
+                new_dict[key] = item
+        return new_dict
 
 
 class MetaJsonSavable(type):
