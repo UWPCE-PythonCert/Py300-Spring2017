@@ -2,11 +2,32 @@
 
 """
 unit tests for the models in the mailroom program
+
+$ pytest
+
+will run the tests.
+
+$ pytest py.test --cov=mailroom mailroom/test/
+
+will run the tests and show a coverage report.
+
+$ pytest --cov=mailroom --cov-report html mailroom/test/
+
+will generate an html report.
+
+NOTE: when I first ran it, I got 97% coverage -- it was missing tests
+      of creating a Donor and DonorDB empty.
+
+      This prompted me to write tests for thise, and then I discoverd
+      that I got an error when you tried to get thelast_donation from
+      a Donor that did not have any donations.
+
 """
 
 import os
 import pytest
 from mailroom import model
+
 
 @pytest.fixture
 def sample_db():
@@ -14,6 +35,29 @@ def sample_db():
     creates a clean sample database for the tests to use
     """
     return model.DonorDB(model.get_sample_data())
+
+
+def test_empty_db():
+    """
+    tests that you can initilize an empty DB
+    """
+    db = model.DonorDB()
+
+    donor_list = db.list_donors()
+    print(donor_list)
+    # no donors
+    assert donor_list.strip() == "Donor list:"
+
+
+def test_new_empty_donor():
+    """
+    creates an new donor with no donations
+    """
+    donor = model.Donor("Fred Flintstone")
+
+    assert donor.name == "Fred Flintstone"
+    assert donor.last_donation is None
+
 
 def test_add_donation(sample_db):
     # fixme: there should be a better way to get an arbitrary donor
@@ -23,6 +67,16 @@ def test_add_donation(sample_db):
 
     assert donor.last_donation == 3000
 
+
+def test_add_donation_negative(sample_db):
+    # fixme: there should be a better way to get an arbitrary donor
+    donor = sample_db.donor_data.popitem()[1]
+
+    with pytest.raises(ValueError):
+        donor.add_donation(-100)
+
+    with pytest.raises(ValueError):
+        donor.add_donation(0.0)
 
 
 def test_list_donors(sample_db):
@@ -68,9 +122,9 @@ def test_add_donor(sample_db):
     name = "Fred Flintstone  "
 
     donor = sample_db.add_donor(name)
-    donor[1].append(300)
-    assert donor[0] == "Fred Flintstone"
-    assert donor[1] == [300]
+    donor.add_donation(300)
+    assert donor.name == "Fred Flintstone"
+    assert donor.last_donation == 300
     assert sample_db.find_donor(name) == donor
 
 

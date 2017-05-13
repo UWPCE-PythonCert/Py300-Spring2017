@@ -2,30 +2,18 @@
 """
 models for the mailroom program.
 
-This is where the programlogic is.
+This is where the program logic is.
 
-This version has been made mroe Object oriented.
+This version has been made Object Oriented.
 """
-
-import sys
-import math
 
 # handy utility to make pretty printing easier
 from textwrap import dedent
 
 
-# In memory representation of the donor database
-# using a tuple for each donor
-# -- kind of like a record in a database table
-# using a dict with a lower case version of the donor's name as the key
-# This makes it easier to have a 'normalized' key.
-#  you could get a bit fancier by having each "record" be a dict, with
-#   "name" and "donations" as keys.
-
 def get_sample_data():
     """
     returns a list of donor objects to use as sample data
-
     """
     return [Donor("William Gates III", [653772.32, 12.17]),
             Donor("Jeff Bezos", [877.33]),
@@ -34,7 +22,7 @@ def get_sample_data():
             ]
 
 
-class Donor:
+class Donor():
     """
     class to hold the information about a single donor
     """
@@ -42,45 +30,57 @@ class Donor:
     def __init__(self, name, donations=None):
         """
         create a new Donor object
-        
+
         :param name: the full name of the donor
 
         :param donations=None: iterable of past donations
         """
 
-        self.norm_name = self._normalize_name(name)
-        self.name = name
+        self.norm_name = self.normalize_name(name)
+        self.name = name.strip()
         if donations is None:
             self.donations = []
         else:
             self.donations = list(donations)
 
-
     @staticmethod
-    def _normalize_name(name):
+    def normalize_name(name):
         """
         return a normalized version of a name to use as a comparison key
 
         simple enough to not be in a method now, but maybe you'd want to make it fancier later.
         """
-        return name.lower()
+        return name.lower().strip()
 
     @property
     def last_donation(self):
         """
         The most recent donation made
         """
-        return self.donations[-1]
+        try:
+            return self.donations[-1]
+        except IndexError:
+            return None
+
+    @property
+    def total_donations(self):
+        return sum(self.donations)
+
+    @property
+    def average_donation(self):
+        return self.total_donations / len(self.donations)
 
     def add_donation(self, amount):
         """
         add a new donation
         """
-        # fixme: this would be a good palce to do some error checking!
-        self.donations.append(float(amount))
+        amount = float(amount)
+        if amount <= 0.0:
+            raise ValueError("Donation must be greater than zero")
+        self.donations.append(amount)
 
 
-class DonorDB:
+class DonorDB():
     """
     encapsulation of the entire database of donors and data associated with them.
     """
@@ -94,8 +94,14 @@ class DonorDB:
         if donors is None:
             self.donor_data = {}
         else:
-            self.donor_data = {d.norm_name:d for d in donors}
+            self.donor_data = {d.norm_name: d for d in donors}
 
+    @property
+    def donors(self):
+        """
+        an iterable of all the donors
+        """
+        return self.donor_data.values()
 
     def list_donors(self):
         """
@@ -105,10 +111,9 @@ class DonorDB:
         test
         """
         listing = ["Donor list:"]
-        for donor in self.donor_data.values():
+        for donor in self.donors:
             listing.append(donor.name)
         return "\n".join(listing)
-
 
     def find_donor(self, name):
         """
@@ -118,9 +123,7 @@ class DonorDB:
 
         :returns: The donor data structure -- None if not in the self.donor_data
         """
-        key = name.strip().lower()
-        return self.donor_data.get(key)
-
+        return self.donor_data.get(Donor.normalize_name(name))
 
     def add_donor(self, name):
         """
@@ -130,11 +133,9 @@ class DonorDB:
 
         :returns: the new Donor data structure
         """
-        name = name.strip()
-        donor = (name, [])
-        self.donor_data[name.lower()] = donor
+        donor = Donor(name)
+        self.donor_data[donor.norm_name] = donor
         return donor
-
 
     def gen_letter(self, donor):
         """
@@ -155,15 +156,12 @@ class DonorDB:
                              Sincerely,
                                 -The Team
               '''.format(donor.name, donor.last_donation)
-              )
-
-
+                      )
 
     @staticmethod
     def sort_key(item):
         # used to sort on name in self.donor_data
         return item[1]
-
 
     def generate_donor_report(self):
         """
@@ -173,13 +171,12 @@ class DonorDB:
         """
         # First, reduce the raw data into a summary list view
         report_rows = []
-        #fixme - make the donor db directly iterable?
         for donor in self.donor_data.values():
             name = donor.name
             gifts = donor.donations
-            total_gifts = sum(gifts)
+            total_gifts = donor.total_donations
             num_gifts = len(gifts)
-            avg_gift = total_gifts / num_gifts
+            avg_gift = donor.average_donation
             report_rows.append((name, total_gifts, num_gifts, avg_gift))
 
         # sort the report data
@@ -193,7 +190,6 @@ class DonorDB:
         for row in report_rows:
             report.append("{:25s}   ${:10.2f}   {:9d}   ${:11.2f}".format(*row))
         return "\n".join(report)
-
 
     def save_letters_to_disk(self):
         """
