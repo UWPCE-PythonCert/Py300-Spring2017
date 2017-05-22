@@ -103,8 +103,6 @@ Session 8
 
 May 23
 
-(Maria Out?)
-
 .. rst-class:: left
 
   - :ref:`metaclasses`
@@ -135,8 +133,6 @@ Session 10
 ==========
 
 June 6
-
-(Chris out)
 
 .. rst-class:: left
 
