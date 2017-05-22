@@ -109,9 +109,6 @@ May 23
 
   - :ref:`metaclasses`
 
-  - :ref:`serialization`
-
-  - :ref:`nosql`
 
 
 Session 9
@@ -120,6 +117,12 @@ Session 9
 May 30
 
 .. rst-class:: left
+
+  Some fraction of:
+
+  - :ref:`serialization`
+
+  - :ref:`nosql`
 
   - :ref:`threading`
 
