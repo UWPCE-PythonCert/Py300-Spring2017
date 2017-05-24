@@ -83,9 +83,7 @@ May 9
 
 .. rst-class:: left
 
-  - :ref:`advanced_oo` -- Chris
-
-  - :ref:`metaclasses`
+  - :ref:`advanced_oo` -- subclassing and super()
 
 Session 7
 =========
@@ -105,13 +103,10 @@ Session 8
 
 May 23
 
-(Maria Out)
-
 .. rst-class:: left
 
-  - :ref:`serialization`
+  - :ref:`metaclasses`
 
-  - :ref:`nosql`
 
 
 Session 9
@@ -120,6 +115,12 @@ Session 9
 May 30
 
 .. rst-class:: left
+
+  Some fraction of:
+
+  - :ref:`serialization`
+
+  - :ref:`nosql`
 
   - :ref:`threading`
 
@@ -132,8 +133,6 @@ Session 10
 ==========
 
 June 6
-
-(Chris out)
 
 .. rst-class:: left
 
