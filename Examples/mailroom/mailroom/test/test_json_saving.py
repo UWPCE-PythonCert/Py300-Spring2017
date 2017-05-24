@@ -4,7 +4,8 @@ import pytest
 
 from mailroom import model
 
-pytestmark = pytest.mark.skipif(True, reason="don't have json_save yet")  # we'll run these again when the json_save stuff in is.
+# we'll run these again when the json_save stuff in is.
+# pytestmark = pytest.mark.skipif(True, reason="don't have json_save yet")
 
 
 def test_donor_round_trip():
@@ -17,7 +18,15 @@ def test_donor_round_trip():
 
     print(json_dict)
 
+    print(donor)
+    print(donor2)
+
     assert donor2 == donor
+
+    # in case equality isn't right...
+    assert donor.name == donor2.name
+    assert donor.norm_name == donor2.norm_name
+    assert donor.donations == donor2.donations
 
 
 def test_database_save():
@@ -30,5 +39,13 @@ def test_database_save():
     print(db2)
 
     assert db2 == db
+    assert db2.donor_data == db.donor_data
 
-    assert False
+
+def test_save_load_file():
+    db = model.DonorDB(model.get_sample_data())
+    db.save_to_file("test.json")
+    db2 = model.DonorDB.load_from_file("test.json")
+
+    assert db == db2
+

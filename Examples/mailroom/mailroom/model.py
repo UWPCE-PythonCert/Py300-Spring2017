@@ -10,6 +10,8 @@ This version has been made Object Oriented.
 # handy utility to make pretty printing easier
 from textwrap import dedent
 
+import json_save.json_save as js
+
 
 def get_sample_data():
     """
@@ -22,10 +24,13 @@ def get_sample_data():
             ]
 
 
-class Donor():
+class Donor(js.JsonSavable):
     """
     class to hold the information about a single donor
     """
+    name = js.String()
+    norm_name = js.String()
+    donations = js.List()
 
     def __init__(self, name, donations=None):
         """
@@ -80,10 +85,12 @@ class Donor():
         self.donations.append(amount)
 
 
-class DonorDB():
+class DonorDB(js.JsonSavable):
     """
     encapsulation of the entire database of donors and data associated with them.
     """
+
+    donor_data = js.Dict()
 
     def __init__(self, donors=None):
         """
@@ -95,6 +102,16 @@ class DonorDB():
             self.donor_data = {}
         else:
             self.donor_data = {d.norm_name: d for d in donors}
+
+    def save_to_file(self, filename):
+        with open(filename, 'w') as outfile:
+            self.to_json(outfile)
+
+    @classmethod
+    def load_from_file(cls, filename):
+        with open(filename, 'r') as infile:
+            obj = js.from_json(infile)
+        return obj
 
     @property
     def donors(self):
