@@ -15,6 +15,7 @@ class CoolMeta(type):
         print(obj)
         return obj
 
+print("about to create CoolClass")
 
 class CoolClass(metaclass=CoolMeta):
     def __init__(self):

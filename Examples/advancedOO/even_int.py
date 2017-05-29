@@ -14,4 +14,13 @@ class EvenInt(int):
     """
     An integer that is always even
     """
-    pass
+    def __new__(cls, n):
+        print("in new:", n)
+        n = float(n)
+        if not (n % 2 == 0):
+            print("not even")
+            n = round(n / 2) * 2
+        print(n)
+        return super().__new__(cls, n)
+
+
