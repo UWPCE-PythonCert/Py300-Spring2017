@@ -1,45 +1,50 @@
 #!/usr/bin/env python
 
 """
-simple async example derived from python docs.
+Simple async example derived from python docs.
 
 Will only work on Python 3.5 and above
 """
 
-import time
 import asyncio
+import time
 import datetime
 import random
 
 # using "async" makes this a coroutine:
+# its code can be run by the event loop
 async def display_date(num):
-    # the event loop has a time() built in.
-    end_time = time.time() + 15.0  # we want it to run for 50 seconds.
-    print("should end at:", end_time)
+    end_time = time.time() + 10.0  # we want it to run for 10 seconds.
     while True:  # keep doing this until break
         print("instance: {} Time: {}".format(num, datetime.datetime.now()))
-        print("current time:", time.time())
         if (time.time()) >= end_time:
             print("instance: {} is all done".format(num))
             break
-        await asyncio.sleep(random.randint(0, 5))
+        # pause for a random amount of time
+        await asyncio.sleep(random.randint(0, 3))
 
-# async def display_date(num, loop):
-#     end_time = loop.time() + 50.0
-#     while True:
-#         print("Loop: {} Time: {}".format(num, datetime.datetime.now()))
-#         if (loop.time() + 1.0) >= end_time:
-#             break
-#         await asyncio.sleep(random.randint(0, 5))
+def shutdown():
+    print("shutdown called")
+    # you can access the event loop this way:
+    loop = asyncio.get_event_loop()
+    loop.stop()
 
 
-loop = asyncio.get_event_loop()
-
+# You register "futures" on the loop this way:
 asyncio.ensure_future(display_date(1))
 asyncio.ensure_future(display_date(2))
 
+loop = asyncio.get_event_loop()
 
-# asyncio.ensure_future(display_date(1, loop))
-# asyncio.ensure_future(display_date(2, loop))
-#loop.run_until_complete()
+# or add tasks to the loop like this:
+loop.create_task(display_date(3))
+loop.create_task(display_date(4))
+
+# this will shut the event loop down in 15 seconds
+loop.call_later(15, shutdown)
+
+print("about to run loop")
+# this is a blocking call
 loop.run_forever()
+print("loop exited")
+
