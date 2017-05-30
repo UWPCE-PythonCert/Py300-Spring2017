@@ -27,6 +27,7 @@ Borrowed from:
 
 http://terriblecode.com/blog/asynchronous-http-requests-in-python/
 """
+import pdb
 import asyncio
 import aiohttp
 import json
@@ -84,17 +85,37 @@ def get_players(player_args):
         [(item[0], item[2]) for item in data['resultSets'][0]['rowSet']])
 
 
+# # this is what we want to make concurrent
+# async def get_player(player_id, player_name):
+#     endpoint = '/commonplayerinfo'
+#     params = {'playerid': player_id}
+#     url = base_url + endpoint
+#     print("Getting player", player_name)
+#     async with aiohttp.ClientSession() as session:
+#         print("session created")
+#         async with session.get(url, headers=HEADERS, params=params) as resp:
+#             print("response:", resp)
+#             #all_players[name] = await resp.json()
+#             return await resp.json()
+#             print("got:", player_name)
+#     print("Done with get_player:", player_name)
+
 # this is what we want to make concurrent
 async def get_player(player_id, player_name):
     endpoint = '/commonplayerinfo'
     params = {'playerid': player_id}
     url = base_url + endpoint
     print("Getting player", player_name)
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, headers=HEADERS, params=params) as resp:
-            print(resp)
-            all_players[name] = await resp.json()
-            print("got:", player_name)
+    session = aiohttp.ClientSession()
+    print("session created")
+    pdb.set_trace()
+    async with session.get(url, headers=HEADERS, params=params) as resp:
+        print("response:", resp)
+            #all_players[name] = await resp.json()
+        return await resp.json()
+        print("got:", player_name)
+    print("Done with get_player:", player_name)
+
 
 async def get_all_stats(players):
     for id, name in players:
@@ -117,10 +138,12 @@ print("got the players")
 # loop.run_until_complete(get_all_stats(players[:200]))
 # print("got the stats")
 
-loop.run_until_complete(asyncio.gather(
-                     *(get_player(*args) for args in players[:5])
-                     )
-                    )
+# loop.run_until_complete(asyncio.gather(
+#                      *(get_player(*args) for args in players[:5])
+#                      )
+#                     )
+
+loop.run_until_complete(get_player(*players[0]))
 
 # for id, name in players:
 #     all_players[name] = get_player(id, name)
