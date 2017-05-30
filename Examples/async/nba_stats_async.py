@@ -12,6 +12,8 @@ Running this on my machine, on my home network, took:
 On my OS-X box, a regular user is limited to 256 open files per process.
 A socket is considered a file -- so this can crash out when it hits that limit.
 
+(as of now, there are 491 players listed)
+
 You can increase it with:
 
 ulimit -n 2048
@@ -92,6 +94,7 @@ async def get_player(player_id, player_name):
         async with session.get(url, headers=HEADERS, params=params) as resp:
             print(resp)
             all_players[name] = await resp.json()
+            print("got:", player_name)
 
 async def get_all_stats(players):
     for id, name in players:
@@ -110,14 +113,14 @@ print("getting the players")
 get_players(players)
 print("got the players")
 
-print("getting the stats")
-loop.run_until_complete(get_all_stats(players))
-print("got the stats")
+# print("getting the stats")
+# loop.run_until_complete(get_all_stats(players[:200]))
+# print("got the stats")
 
-# loop.run_until_complete(asyncio.gather(
-#                      *(get_player(*args) for args in players)
-#                      )
-#                     )
+loop.run_until_complete(asyncio.gather(
+                     *(get_player(*args) for args in players[:5])
+                     )
+                    )
 
 # for id, name in players:
 #     all_players[name] = get_player(id, name)
