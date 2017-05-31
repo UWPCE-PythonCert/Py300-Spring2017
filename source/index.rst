@@ -118,11 +118,7 @@ May 30
 
   Some fraction of:
 
-  - :ref:`serialization`
-
-  - :ref:`nosql`
-
-  - :ref:`threading`
+  - :ref:`concurrency`
 
   - :ref:`async`
 
