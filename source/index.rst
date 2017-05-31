@@ -122,8 +122,6 @@ May 30
 
   - :ref:`async`
 
-  - :ref:`profiling`
-
 
 Session 10
 ==========
