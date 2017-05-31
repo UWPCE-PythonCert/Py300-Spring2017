@@ -116,8 +116,6 @@ May 30
 
 .. rst-class:: left
 
-  Some fraction of:
-
   - :ref:`concurrency`
 
   - :ref:`async`
