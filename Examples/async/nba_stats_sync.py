@@ -36,33 +36,42 @@ def get_players(player_args):
     params = {'leagueid': '00', 'season': '2016-17', 'isonlycurrentseason': '1'}
     url = base_url + endpoint
     print('Getting all players...')
-    resp = requests.get(url, headers=HEADERS, params=params)
+    resp = requests.get(url,
+                        headers=HEADERS,
+                        params=params)
     data = resp.json()
     player_args.extend(
         [(item[0], item[2]) for item in data['resultSets'][0]['rowSet']])
 
 
 def get_player(player_id, player_name):
+    """
+    The request for a player's stats.
+
+    Should be a request like:
+
+    http://stats.nba.com/stats/commonplayerinfo?playerid=203112
+    """
     endpoint = '/commonplayerinfo'
     params = {'playerid': player_id}
     url = base_url + endpoint
-    print("Getting player", player_name)
-    resp = requests.get(url, headers=HEADERS, params=params)
+    print("Getting player", player_name, player_id)
+    resp = requests.get(url,
+                        headers=HEADERS,
+                        params=params)
     print(resp)
-    # data = resp.text
-    # with open(player_name.replace(" ", "_") + '.json', 'w') as file:
-    #     file.write(data)
-    return resp.json()
-
+    data = resp.json()
+    all_players[player_name] = data
 
 all_players = {}
-player_args = []
+players = []
 
 start = time.time()
-get_players(player_args)
+get_players(players)
 
-for id, name in player_args:
-    all_players[name] = get_player(id, name)
+print("there are {} players".format(len(players)))
+for id, name in players:
+    get_player(id, name)
 
 print("Done getting data: it took {:.2F} seconds".format(time.time() - start))
 

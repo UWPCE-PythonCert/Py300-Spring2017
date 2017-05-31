@@ -42,7 +42,6 @@ HEADERS = {
                    'Chrome/45.0.2454.101 Safari/537.36'),
 }
 
-
 # # this needs to be run first before we can start -- so no need for async
 # # but making it async so we can use the aiohttp lib.
 # async def get_players(players):
@@ -63,6 +62,7 @@ HEADERS = {
 #             print("got the response")
 #             data = await resp.json()
 #     players.append([(item[0], item[2]) for item in data['resultSets'][0]['rowSet']])
+
 
 def get_players(player_args):
     """
@@ -85,42 +85,27 @@ def get_players(player_args):
         [(item[0], item[2]) for item in data['resultSets'][0]['rowSet']])
 
 
-# # this is what we want to make concurrent
-# async def get_player(player_id, player_name):
-#     endpoint = '/commonplayerinfo'
-#     params = {'playerid': player_id}
-#     url = base_url + endpoint
-#     print("Getting player", player_name)
-#     async with aiohttp.ClientSession() as session:
-#         print("session created")
-#         async with session.get(url, headers=HEADERS, params=params) as resp:
-#             print("response:", resp)
-#             #all_players[name] = await resp.json()
-#             return await resp.json()
-#             print("got:", player_name)
-#     print("Done with get_player:", player_name)
-
 # this is what we want to make concurrent
 async def get_player(player_id, player_name):
     endpoint = '/commonplayerinfo'
     params = {'playerid': player_id}
     url = base_url + endpoint
     print("Getting player", player_name)
-    session = aiohttp.ClientSession()
-    print("session created")
-    pdb.set_trace()
-    async with session.get(url, headers=HEADERS, params=params) as resp:
-        print("response:", resp)
-            #all_players[name] = await resp.json()
-        return await resp.json()
-        print("got:", player_name)
+    async with aiohttp.ClientSession() as session:
+        print("session created")
+        async with session.get(url,
+                               skip_auto_headers=["User-Agent"],
+                               headers=HEADERS,
+                               params=params) as resp:
+            print("response:", resp)
+            all_players[player_name] = await resp.json()
+            print("got:", player_name)
     print("Done with get_player:", player_name)
 
-
-async def get_all_stats(players):
-    for id, name in players:
-        print("getting:", name)
-        all_players[name] = await get_player(id, name)
+# async def get_all_stats(players):
+#     for id, name in players:
+#         print("getting:", name)
+#         all_players[name] = await get_player(id, name)
 
 all_players = {}
 players = []
@@ -133,17 +118,18 @@ print("getting the players")
 
 get_players(players)
 print("got the players")
+print("there are {} players".format(len(players)))
 
 # print("getting the stats")
 # loop.run_until_complete(get_all_stats(players[:200]))
 # print("got the stats")
 
-# loop.run_until_complete(asyncio.gather(
-#                      *(get_player(*args) for args in players[:5])
-#                      )
-#                     )
+loop.run_until_complete(asyncio.gather(
+                     *(get_player(*args) for args in players[:10])
+                     )
+                    )
 
-loop.run_until_complete(get_player(*players[0]))
+# loop.run_until_complete(get_player(*players[0]))
 
 # for id, name in players:
 #     all_players[name] = get_player(id, name)
